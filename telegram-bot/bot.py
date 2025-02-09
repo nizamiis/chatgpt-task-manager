@@ -12,6 +12,7 @@ from telegram.ext import (
 from envs import env
 from chatgpt import chat_with_gpt
 
+
 logging.basicConfig(level=logging.INFO)
 
 # ---------------------------------------------------------------------
@@ -85,8 +86,8 @@ def lambda_handler(event, context):
     AWS Lambda handler that processes incoming webhook updates from Telegram.
     This function is triggered when the AWS API Gateway endpoint receives a POST request.
     """
-    logging.info("Received Lambda event.")
-    logging.debug(f"Event payload: {json.dumps(event)}")
+    logging.getLogger().setLevel('INFO')
+    logging.info(f"Received Lambda event: {json.dumps(event)}")
 
     try:
         # Parse the incoming request body

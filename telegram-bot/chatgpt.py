@@ -4,6 +4,7 @@ import requests
 import json
 from fastapi import HTTPException
 
+
 logging.basicConfig(level=logging.INFO)
 
 API_BASE_URL = "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/Prod/"
@@ -20,7 +21,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "save_task_list",
-            "description": "Save the task list with all tasks of the user to DB when there are any changes.",
+            "description": "Automatically save the task list with all tasks of the user to DB whenever there are any changes.",
             "strict": True,
             "parameters": {
                 "type": "object",

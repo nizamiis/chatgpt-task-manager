@@ -5,8 +5,8 @@ Description: Telegram Bot Webhook Serverless Deployment
 
 Globals:
   Function:
-    Timeout: 300
-    MemorySize: 1024
+    Timeout: 180
+    MemorySize: 256
 
 Resources:
   TelegramBotFunction:
@@ -22,6 +22,7 @@ Resources:
         Variables:
           TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
           AUTHORIZED_USERS: !Ref AuthorizedUsers
+          OPENAI_API_KEY: !Ref OpenAiApiKey
       Events:
         ApiWebhook:
           Type: Api
@@ -37,6 +38,10 @@ Parameters:
   AuthorizedUsers:
     Type: String
     Description: "Comma-separated list of authorized user IDs"
+
+  OpenAiApiKey:
+    Type: String
+    Description: "OpenAI API token"
 
 Outputs:
   BotApiEndpoint:
