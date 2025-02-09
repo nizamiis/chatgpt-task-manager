@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 
 logging.basicConfig(level=logging.INFO)
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/Prod/"
 system_prompt = "You are a helpful assistant that helps users manage their tasks."
 gpt_model = "gpt-4o"
 tools = [

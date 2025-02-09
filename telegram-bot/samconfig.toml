@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "telegram-bot"
+resolve_s3 = true
+s3_prefix = "telegram-bot"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "TELEGRAM_BOT_TOKEN=\"\" AUTHORIZED_USERS=\"\""
+image_repositories = []

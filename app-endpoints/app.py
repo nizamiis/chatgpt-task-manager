@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import openai
 from envs import env
+from mangum import Mangum
 
 
 # Initialize FastAPI application
@@ -91,3 +92,7 @@ def get_tasks(user_id: str = Query(..., description="User ID to fetch the task l
     """
     response = task_summary_table.get_item(Key={"user_id": user_id})
     return response.get("Item", {}).get("task_list", "No tasks found.")
+
+
+# Handler for AWS Lambda
+handler = Mangum(app)

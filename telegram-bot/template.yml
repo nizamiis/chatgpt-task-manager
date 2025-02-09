@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Telegram Bot Webhook Serverless Deployment
+
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 1024
+
+Resources:
+  TelegramBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TelegramBotLambda
+      Handler: bot.lambda_handler
+      Runtime: python3.10
+      CodeUri: .
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
+          AUTHORIZED_USERS: !Ref AuthorizedUsers
+      Events:
+        ApiWebhook:
+          Type: Api
+          Properties:
+            Path: /webhook
+            Method: post
+
+Parameters:
+  TelegramBotToken:
+    Type: String
+    Description: "Telegram Bot API Token"
+
+  AuthorizedUsers:
+    Type: String
+    Description: "Comma-separated list of authorized user IDs"
+
+Outputs:
+  BotApiEndpoint:
+    Description: "API Gateway endpoint for Telegram Webhook"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook"
+
