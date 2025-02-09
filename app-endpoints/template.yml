@@ -3,6 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: FastAPI on Lambda
 
 Resources:
+  # Define API Gateway
+  FastAPIGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        InvokeRole: NONE # Disable IAM authentication if not needed
+
+  # Define Lambda function
   FastAPILambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -13,14 +22,11 @@ Resources:
       Policies:
         - AmazonDynamoDBFullAccess
         - AWSLambdaBasicExecutionRole
-      Environment:
-        Variables:
-          OPENAI_API_KEY: your-openai-key-here
-          # or handle secrets in Secrets Manager
       Events:
         ApiEvent:
           Type: Api
           Properties:
+            RestApiId: !Ref FastAPIGateway # Explicitly link to API Gateway
             Path: /{proxy+}
             Method: ANY
 
