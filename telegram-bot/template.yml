@@ -49,18 +49,20 @@ Parameters:
 
   GPTModel:
     Type: String
+    Default: "gpt-4o"
     Description: "GPT Model"
 
   GPTSystemPrompt:
     Type: String
+    Default: "You are a helpful assistant that helps users manage their tasks."
     Description: "GPT System Prompt"
 
   TaskManagerAPIGatewayURL:
     Type: String
+    Default: "Your API Gateway URL here."
     Description: "Task Manager API Gateway URL"
 
 Outputs:
   BotApiEndpoint:
     Description: "API Gateway endpoint for Telegram Webhook"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook"
-
