@@ -1,4 +1,3 @@
-# Importing necessary modules
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional
@@ -15,7 +14,7 @@ app = FastAPI()
 dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
 task_summary_table = dynamodb.Table("UserTaskSummary")
 
-# OpenAI Configuration
+# Get OpenAI key from environment variable
 openai.api_key = env("OPENAI_API_KEY")
 
 # Models

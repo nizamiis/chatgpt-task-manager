@@ -29,4 +29,3 @@ Resources:
             RestApiId: !Ref FastAPIGateway # Explicitly link to API Gateway
             Path: /{proxy+}
             Method: ANY
-
