@@ -3,19 +3,34 @@ import logging
 import requests
 import json
 from fastapi import HTTPException
+import boto3
+from requests_aws4auth import AWS4Auth
+from envs import env
 
 
 logging.basicConfig(level=logging.INFO)
 
-API_BASE_URL = "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/Prod/"
+# AWS SigV4 Configuration
+# Get credentials from the Lambda execution environment
+session = boto3.Session()
+credentials = session.get_credentials().get_frozen_credentials()
 
-# System prompt for GPT
-SYSTEM_PROMPT = "You are a helpful assistant that helps users manage their tasks."
+REGION = env("DEPLOYMENT_REGION")
+SERVICE = "execute-api"
+aws_auth = AWS4Auth(
+    credentials.access_key,
+    credentials.secret_key,
+    REGION,
+    SERVICE,
+    session_token=credentials.token
+)
 
-# Model to be used; depends on your OpenAI config
-GPT_MODEL = "gpt-4o"
+# API Gateway base URL
+API_BASE_URL = env("TASK_MANAGER_API_GATEWAY_URL")
 
-# Define available tools (functions) for ChatGPT to call
+# GPT configuration
+GPT_MODEL = env("GPT_MODEL")
+SYSTEM_PROMPT = env("GPT_SYSTEM_PROMPT")
 TOOLS = [
     {
         "type": "function",
@@ -52,11 +67,16 @@ def call_tool_function(name, args):
 
 def get_task_list(user_id):
     """
-    Get the current task list for a given user from the remote API.
+    Get the current task list for a given user from the remote API,
+    signing the request using AWS SigV4.
     """
     params = {"user_id": user_id}
     try:
-        response = requests.get(f"{API_BASE_URL}/task_list", params=params)
+        response = requests.get(
+            f"{API_BASE_URL}/task_list",
+            params=params,
+            auth=aws_auth
+        )
         logging.info(f"GET /task_list response: {response.status_code}")
         if response.status_code == 200:
             return response.json()
@@ -68,20 +88,26 @@ def get_task_list(user_id):
 
 def save_task_list(user_id: str, task_list: str):
     """
-    Save a formatted task list for a user in DynamoDB via the API.
+    Save a formatted task list for a user in DynamoDB via the API,
+    signing the request with AWS SigV4.
     """
     if not isinstance(task_list, str):
         return {"error": "Task list must be a string."}
 
     payload = {
         "user_id": str(user_id),         # Ensure user_id is a string
-        "task_list": task_list.strip()   # Trim whitespace for consistency
+        "task_list": task_list.strip()     # Trim whitespace for consistency
     }
 
     headers = {"Content-Type": "application/json"}
 
     try:
-        response = requests.post(f"{API_BASE_URL}/task_list", json=payload, headers=headers)
+        response = requests.post(
+            f"{API_BASE_URL}/task_list",
+            json=payload,
+            headers=headers,
+            auth=aws_auth
+        )
         logging.info(f"POST /task_list response: {response.status_code}")
         if response.status_code in [200, 201]:
             return response.json()

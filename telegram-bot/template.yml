@@ -23,6 +23,10 @@ Resources:
           TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
           AUTHORIZED_USERS: !Ref AuthorizedUsers
           OPENAI_API_KEY: !Ref OpenAiApiKey
+          GPT_MODEL: !Ref GPTModel
+          GPT_SYSTEM_PROMPT: !Ref GPTSystemPrompt
+          DEPLOYMENT_REGION: !Sub "${AWS::Region}"
+          TASK_MANAGER_API_GATEWAY_URL: !Ref TaskManagerAPIGatewayURL
       Events:
         ApiWebhook:
           Type: Api
@@ -42,6 +46,18 @@ Parameters:
   OpenAiApiKey:
     Type: String
     Description: "OpenAI API token"
+
+  GPTModel:
+    Type: String
+    Description: "GPT Model"
+
+  GPTSystemPrompt:
+    Type: String
+    Description: "GPT System Prompt"
+
+  TaskManagerAPIGatewayURL:
+    Type: String
+    Description: "Task Manager API Gateway URL"
 
 Outputs:
   BotApiEndpoint:
