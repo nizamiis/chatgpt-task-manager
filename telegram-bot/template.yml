@@ -64,5 +64,5 @@ Parameters:
 
 Outputs:
   BotApiEndpoint:
-    Description: "API Gateway endpoint for Telegram Webhook"
+    Description: "API Gateway endpoint for Telegram Webhook. Use it to register your bot in Telegram."
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook"
