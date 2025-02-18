@@ -131,5 +131,6 @@ To further secure your API Gateway endpoints, create AWS WAF rules that filter o
    - Allows requests only when this header is included.
 
    Below is an example of how such a rule might look:
+   
    ![Allow Only Signed Requests Rule](./images/allow-only-signed-requests-rule.png)
-5. Set default web ACL action to `Block` for requests that don't match any rules.
+6. Set default web ACL action to `Block` for requests that don't match any rules.
