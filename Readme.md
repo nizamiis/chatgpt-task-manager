@@ -76,3 +76,60 @@ API Gateway > Your API > Stages > Your Stage > Invoke URL
 ```bash
 curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook" -d "url=<WEBHOOK_URL>"
 ```
+
+Below is a revised version of your documentation with improved clarity, consistency, and minor typo fixes:
+
+## Security
+
+To protect the API Gateway endpoints, we will use a combination of API Gateway resource policies and AWS WAF rules.
+
+### 1. Add Resource Policy to the API Gateway
+
+To allow requests only from the Telegram bot's Lambda function, add a resource policy to the Task Manager API Gateway:
+
+1. In the AWS Console, navigate to **API Gateway > Task Manager API Gateway > Resource Policy**.
+2. Add the following policy:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Principal": {
+           "AWS": "your-telegram-bot-role-arn"
+         },
+         "Action": "*",
+         "Resource": "arn:aws:execute-api:YOUR-AWS-REGION:YOUR-AWS-ACC-NUM:TASK-MANAGER-API-GATEWAY-ID/*/*/*"
+       }
+     ]
+   }
+   ```
+3. Replace the following variables with the actual values:
+   - **`your-telegram-bot-role-arn`**: The ARN of the Telegram bot's Lambda function role. You can find it under **Lambda > TelegramBotFunction > Configuration > Permissions > Role name > ARN**.
+   - **`YOUR-AWS-REGION`**: The AWS region where the API Gateway is deployed.
+   - **`YOUR-AWS-ACC-NUM`**: Your AWS account number.
+   - **`TASK-MANAGER-API-GATEWAY-ID`**: The API Gateway ID for the Task Manager API. You can find it under **API Gateway > Task Manager API Gateway > API Settings > API ID**.
+
+### 2. Enable AWS_IAM Authorization for the API Gateway
+
+Since our Telegram bot signs its requests using the AWS SigV4 package, you can enable `AWS_IAM` authorization to verify these requests:
+
+1. In the AWS Console, navigate to **API Gateway > Task Manager API Gateway > Resources**.
+2. Select the HTTP method (e.g., GET, POST) you want to secure.
+3. Under **Method Request**, click **Edit**.
+4. Set **Authorization** to `AWS_IAM`.
+
+### 3. Create AWS WAF Rules to Protect API Gateway Endpoints
+
+To further secure your API Gateway endpoints, create AWS WAF rules that filter out requests lacking the proper authorization headers:
+
+1. In the AWS Console, navigate to **AWS WAF > Web ACLs**.
+2. Create a new Web ACL in the same region as your API Gateway.
+3. Associate the Task Manager API Gateway with this Web ACL.
+4. Add rules with conditions to allow only requests that include the `x-amz-security-token` header. For example, create a rule that:
+   - Checks for the presence of the `x-amz-security-token` header.
+   - Allows requests only when this header is included.
+
+   Below is an example of how such a rule might look:
+   ![Allow Only Signed Requests Rule](./images/allow-only-signed-requests-rule.png)
+5. Set default web ACL action to `Block` for requests that don't match any rules.
